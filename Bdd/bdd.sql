@@ -455,3 +455,138 @@ VALUES
   ('maladie' || nextval('seq_maladie'), 'Non-mangeurs de porc', 3);
 
 
+-- ANTENNE.MENUDYNAMIQUE definition
+
+CREATE TABLE "MENUDYNAMIQUE" 
+   (	"ID" VARCHAR2(50), 
+	"LIBELLE" VARCHAR2(50), 
+	"ICONE" VARCHAR2(250), 
+	"HREF" VARCHAR2(250), 
+	"RANG" NUMBER, 
+	"NIVEAU" NUMBER, 
+	"ID_PERE" VARCHAR2(50), 
+	 PRIMARY KEY ("ID")
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 131072 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1 BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "USERS"  ENABLE
+   ) SEGMENT CREATION IMMEDIATE 
+  PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 NOCOMPRESS LOGGING
+  STORAGE(INITIAL 720896 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1 BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "USERS" ;
+
+CREATE UNIQUE INDEX "SYS_C00428005" ON "ANTENNE"."MENUDYNAMIQUE" ("ID") 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 131072 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1 BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "USERS" ;
+
+
+
+
+  -- Insérer des données dans la table "Plat"
+INSERT INTO Plat (id, NomPlats, descri)
+VALUES
+  ('plat' || nextval('seq_plat'), 'Mofo akondro', NULL),
+  ('plat' || nextval('seq_plat'), 'Mofo anana', NULL),
+  ('plat' || nextval('seq_plat'), 'Mofo baolina', NULL),
+  ('plat' || nextval('seq_plat'), 'Pakopako', NULL),
+  ('plat' || nextval('seq_plat'), 'Riz cantonais', NULL),
+  ('plat' || nextval('seq_plat'), 'Riz Firt', NULL),
+  ('plat' || nextval('seq_plat'), 'ailes de poulet caramelisé', NULL),
+  ('plat' || nextval('seq_plat'), 'cuisse de poulet grillé', NULL),
+  ('plat' || nextval('seq_plat'), 'Pistolet', NULL),
+  ('plat' || nextval('seq_plat'), 'Poivron farci', NULL),
+  ('plat' || nextval('seq_plat'), 'hena Omby ritra', NULL),
+  ('plat' || nextval('seq_plat'), 'tripy sauce', NULL),
+  ('plat' || nextval('seq_plat'), 'Tsaramaso sy Henakisoa', NULL),
+  ('plat' || nextval('seq_plat'), 'Ravitoto sy Henakisoa', NULL),
+  ('plat' || nextval('seq_plat'), 'Ravitoto sy HenaOmby', NULL),
+  ('plat' || nextval('seq_plat'), 'Voanjobory sy Henakisoa', NULL),
+  ('plat' || nextval('seq_plat'), 'Voanjobory sy HenaOmby', NULL),
+  ('plat' || nextval('seq_plat'), 'Totokena sy Courgettes', NULL),
+  ('plat' || nextval('seq_plat'), 'Voatavo sy voanjo', NULL),
+  ('plat' || nextval('seq_plat'), 'Legioma saosy', NULL),
+  ('plat' || nextval('seq_plat'), 'Saucisse Fumée sy Legioma', NULL),
+  ('plat' || nextval('seq_plat'), 'Saucisse Porc sy Tsaramaso', NULL),
+  ('plat' || nextval('seq_plat'), 'Saucisse Boeuf sy Tsaramaso', NULL),
+  ('plat' || nextval('seq_plat'), 'Lasary Comcombre', NULL),
+  ('plat' || nextval('seq_plat'), 'Lasary Karaoty', NULL),
+  ('plat' || nextval('seq_plat'), 'Lasary Voatabia', NULL),
+  ('plat' || nextval('seq_plat'), 'Lasary Laisoa', NULL),
+  ('plat' || nextval('seq_plat'), 'Lasary Manga', NULL),
+  ('plat' || nextval('seq_plat'), 'Macédoine', NULL),
+  ('plat' || nextval('seq_plat'), 'Hors d œuvre', NULL);
+
+
+
+
+-- Insérer des données dans la table "PlatTyper"
+INSERT INTO PlatTyper (id, idPlat, idTypePlat)
+VALUES
+  ('plattyper' || nextval('seq_plattyper'), 'plat1', '5'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat1', '3'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat2', '5'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat2', '3'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat3', '5'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat3', '3'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat3', '6'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat4', '5'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat5', '9'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat5', '10'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat6', '9'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat6', '10'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat7', '1'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat7', '3'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat7', '10'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat8', '3'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat8', '10'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat9', '3'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat9', '10'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat10', '2'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat10', '3'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat11', '1'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat11', '11'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat11', '4'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat12', '1'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat12', '11'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat13', '1'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat13', '11'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat14', '1'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat14', '11'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat15', '1'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat15', '11'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat16', '1'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat16', '11'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat17', '1'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat17', '11'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat18', '1'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat18', '11'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat19', '1'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat19', '11'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat20', '2'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat20', '9'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat21', '1'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat21', '11'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat21', '10'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat22', '1'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat22', '11'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat22', '10'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat23', '1'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat23', '11'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat23', '10'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat24', '2'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat24', '9'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat25', '2'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat25', '9'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat26', '2'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat26', '9'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat27', '2'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat27', '9'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat28', '2'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat28', '9'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat29', '2'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat29', '9'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat30', '2'),
+  ('plattyper' || nextval('seq_plattyper'), 'plat30', '10');
