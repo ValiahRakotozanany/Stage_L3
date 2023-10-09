@@ -108,7 +108,8 @@ Ajout de plateforme d ingredient et proposition de plats venant de ces ingrédie
 username : Proposition
 Password : Proposition
 
-CREATE ROLE Proposition LOGIN PASSWORD 'Proposition';
+--CREATE ROLE Proposition LOGIN PASSWORD 'Proposition';
+CREATE USER Proposition IDENTIFIED BY Proposition;
 
 create table Famille(
     id varchar(50) PRIMARY KEY ,
@@ -116,6 +117,70 @@ create table Famille(
     email varchar(50),
     motdepasse varchar(50)
 );
+
+
+create table admin(
+    id varchar(50) primary key ,
+    email varchar(50),
+    motdepasse varchar(50)
+);
+---APPPPJJJJJJJ
+
+CREATE TABLE UTILISATEUR (
+	REFUSER int,
+	LOGINUSER VARCHAR(50) DEFAULT '-' ,
+	PWDUSER VARCHAR(50) DEFAULT '-' ,
+	NOMUSER VARCHAR(50) DEFAULT '-' ,
+	ADRUSER VARCHAR(50) DEFAULT '-' ,
+	TELUSER VARCHAR(50) DEFAULT '-' ,
+	IDROLE VARCHAR(20),
+	CONSTRAINT PK_UTILISATEUR PRIMARY KEY (REFUSER));
+
+
+CREATE OR REPLACE  VIEW UTILISATEURVALIDE (REFUSER, LOGINUSER, PWDUSER, NOMUSER, ADRUSER,
+ TELUSER, IDROLE) AS 
+  SELECT REFUSER, LOGINUSER, PWDUSER,NOMUSER, ADRUSER, TELUSER,
+          IDROLE
+     FROM utilisateur
+
+
+CREATE OR REPLACE  VIEW UTILISATEURvue (REFUSER, LOGINUSER, PWDUSER, NOMUSER, ADRUSER,
+ TELUSER, IDROLE) AS 
+  SELECT REFUSER, LOGINUSER, PWDUSER,NOMUSER, ADRUSER, TELUSER,
+          IDROLE
+     FROM utilisateur
+
+CREATE TABLE ROLES (
+	IDROLE VARCHAR(20),
+	DESCROLE VARCHAR(50) DEFAULT '-' ,
+	CONSTRAINT PK_ROLES PRIMARY KEY (IDROLE)
+);
+
+
+insert into roles values('1','Admin');
+
+ALTER TABLE utilisateur
+ADD CONSTRAINT fk_cle_etrangere
+    FOREIGN KEY (IDROLE)
+    REFERENCES roles (idrole);
+
+
+CREATE UNIQUE INDEX PK_ROLES ON ALLOSAKAFOSYNC.ROLES (IDROLE);
+
+
+CREATE TABLE PARAMCRYPT
+   (	ID VARCHAR(250), 
+	NIVEAU int ,
+	CROISSANTE int,
+	IDUTILISATEUR int REFERENCES utilisateur(refuser), 
+	 CONSTRAINT PARAMCRYPT_PK PRIMARY KEY (ID));
+
+insert into paramcrypt(id,niveau,croissante,IDUTILISATEUR) values('1',1,1,1);
+-----AAAAAPPPPPPJJJJJJJ
+
+insert into utilisateur(refuser,LOGINUSER,PWDUSER,nomuser) values(nextval('seq_user'),'Lulu','Lulu','Lulu');
+create sequence seq_user;
+
 
 
 create SEQUENCE seq_famille;
@@ -135,8 +200,9 @@ create table unite(
     mesure varchar(50)
 );
 
+create sequence seq_unite;
 g-piece-ml-cuilleré
-insert into unite(mesure) values('g'),('piece'),('ml'),('G cuilleré'),('P cuilleré');
+insert into unite(id ,mesure) values(seq_unite.nextval,'g'),(seq_unite.nextval,'piece'),(seq_unite.nextval,'ml'),(seq_unite.nextval,'G cuilleré'),(seq_unite.nextval,'P cuilleré');
 
 create SEQUENCE seq_unite;
 
@@ -187,22 +253,22 @@ plats principaux - entrée/apéritifs - snacks - resistance - dessert - petit d�
 
 
 INSERT INTO typeplat (id, typeplat, etat) VALUES
-  (nextval('seq_typeplat'), 'plats principaux', 1),
-  (nextval('seq_typeplat'), 'entrée/apéritifs', 1),
-  (nextval('seq_typeplat'), 'snacks', 1),
-  (nextval('seq_typeplat'), 'résistance', 1),
-  (nextval('seq_typeplat'), 'dessert', 1),
-  (nextval('seq_typeplat'), 'petit déjeuner', 1),
-  (nextval('seq_typeplat'), 'plats traditionnels', 1),
-  (nextval('seq_typeplat'), 'soupe', 1),
-  (nextval('seq_typeplat'), 'accompagnement', 1),
-  (nextval('seq_typeplat'), 'plats de fête', 1),
-  (nextval('seq_typeplat'), 'plats trad(Malagasy)', 1);
+  ((seq_typeplat.nextval), 'plats principaux', 1);
+  INSERT INTO typeplat (id, typeplat, etat) VALUES((seq_typeplat.nextval), 'entrée/apéritifs', 1);
+  INSERT INTO typeplat (id, typeplat, etat) VALUES((seq_typeplat.nextval), 'snacks', 1);
+  INSERT INTO typeplat (id, typeplat, etat) VALUES((seq_typeplat.nextval), 'résistance', 1);
+  INSERT INTO typeplat (id, typeplat, etat) VALUES((seq_typeplat.nextval), 'dessert', 1);
+  INSERT INTO typeplat (id, typeplat, etat) VALUES((seq_typeplat.nextval), 'petit déjeuner', 1);
+  INSERT INTO typeplat (id, typeplat, etat) VALUES((seq_typeplat.nextval), 'plats traditionnels', 1);
+  INSERT INTO typeplat (id, typeplat, etat) VALUES((seq_typeplat.nextval), 'soupe', 1);
+  INSERT INTO typeplat (id, typeplat, etat) VALUES((seq_typeplat.nextval), 'accompagnement', 1);
+  INSERT INTO typeplat (id, typeplat, etat) VALUES((seq_typeplat.nextval), 'plats de fête', 1);
+  INSERT INTO typeplat (id, typeplat, etat) VALUES((seq_typeplat.nextval), 'plats trad(Malagasy)', 1);
 
 Create table Plat(
     id varchar(50) primary key , 
     NomPlats varchar(100),
-    descri text 
+    descri varchar2(250) 
 );
 
 
@@ -224,7 +290,7 @@ Create table Platfille(
     idingredient varchar(50) REFERENCES ingredient(id),
     valeurAdulte double precision ,
     valeurEnfant double precision ,
-    remarque text
+    remarque varchar2(250)
 );
 
 
@@ -238,12 +304,19 @@ create table PlatTyper(
 );
 
 create SEQUENCE seq_plattyper;
+drop SEQUENCE seq_etatM;
+create SEQUENCE seq_etatM start with 1;
 ----Intolérance 
 create table etatmaladie(
-    id serial primary key,
-    etatlib varchar(20)
+    id int,
+    etatlib varchar(20),
+    	 CONSTRAINT "pk" PRIMARY KEY (ID)
+
 );
-insert into etatmaladie(etatlib) values('Maladie'),('Intolerance'),('Autres conditions');
+
+insert into etatmaladie values( (seq_etatM.nextval),'Maladie');
+insert into etatmaladie values( (seq_etatM.nextval),'Intolerance');
+insert into etatmaladie values( (seq_etatM.nextval),'Autres conditions');
 
 
 create table Maladie(
@@ -251,7 +324,7 @@ create table Maladie(
     Maladie varchar(100) ,
     etat int REFERENCES etatmaladie(id)
 );
-create SEQUENCE seq_maladie;-- maladie
+create SEQUENCE seq_maladie start with 1;-- maladie
 
 -- ALTER TABLE maladie
 -- ADD CONSTRAINT fk_etatmaladie
@@ -264,7 +337,7 @@ create table MaladieMembre(
     idMembre varchar(50) REFERENCES Membre(id)
 );
 
-create SEQUENCE seq_maladiemembre;
+create SEQUENCE seq_maladiemembre start with 1;
 
 create table IngredientMaladie(
     id varchar(50) PRIMARY key,
@@ -273,7 +346,7 @@ create table IngredientMaladie(
     etat int 
 );
 
-create SEQUENCE seq_ingredientMaladie;
+create SEQUENCE seq_ingredientMaladie start with 1;
 
 create table PlatMaladie(
     id varchar(50) PRIMARY key,
@@ -281,7 +354,7 @@ create table PlatMaladie(
     idPlat varchar(50) REFERENCES Plat(id),
     etat int 
 );
-create SEQUENCE seq_platmaladie;
+create SEQUENCE seq_platmaladie start with 1;
 
 create table preferenceingredient(
     id varchar(50) PRIMARY key,
@@ -289,7 +362,7 @@ create table preferenceingredient(
     idMembre varchar(50) REFERENCES Membre(id)
 
 );
-create SEQUENCE seq_preferenceingredient;
+create SEQUENCE seq_preferenceingredient start with 1;
 
 create table preferenceplat(
     id varchar(50) PRIMARY key,
@@ -297,21 +370,21 @@ create table preferenceplat(
     idMembre varchar(50) REFERENCES Membre(id)
 );
 
-create SEQUENCE seq_preferenceplat; 
+create SEQUENCE seq_preferenceplat start with 1; 
 
 Create table intolerance(
     id varchar(50) PRIMARY key,
     intolerance varchar(50)
 );
 
-create SEQUENCE seq_intolerance;
+create SEQUENCE seq_intolerance start with 1;
 
 create table IntoleranceIngredient(
     id varchar(50) PRIMARY key,
     idingredient varchar(50) REFERENCES ingredient(id),
     idintolerance VARCHAR(50) REFERENCES Intolerance(id)
 );
-create SEQUENCE seq_intoleranceingredient;
+create SEQUENCE seq_intoleranceingredient start with 1;
 
 create table intoleranceMembre(
     id varchar(50) PRIMARY key,
@@ -319,7 +392,7 @@ create table intoleranceMembre(
     idintolerance VARCHAR(50) REFERENCES Intolerance(id)
 );
 
-create SEQUENCE seq_intolerancemembre;
+create SEQUENCE seq_intolerancemembre start with 1;
 
 create table proposition (
     id varchar(50) primary key,
@@ -340,49 +413,129 @@ create table ingredient_suggerer_maladie(
     
 );
 
+ALTER TABLE PROPOSITION.INGREDIENT MODIFY PRIXACHAT Number(10,2);
+ALTER TABLE PROPOSITION.INGREDIENT MODIFY VALEUR Number(10,2);
+
 -- insertion part ingredients :
 -- Insérer des données d'ingrédients dans la table "ingredient"
-INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)
-VALUES
-  ('ing' || nextval('seq_ingredient'), 'blanc de poulet', 100, 1, 1800),
-  ('ing' || nextval('seq_ingredient'), 'carotte', 100, 1, 1000),
-  ('ing' || nextval('seq_ingredient'), 'Haricot vert', 100, 1, 1200),
-  ('ing' || nextval('seq_ingredient'), 'Courgettes', 100, 1, 500),
-  ('ing' || nextval('seq_ingredient'), 'œuf', 1, 2, 1000),
-  ('ing' || nextval('seq_ingredient'), 'lait', 100, 3, 550),
-  ('ing' || nextval('seq_ingredient'), 'salade', 50, 1, 500),
-  ('ing' || nextval('seq_ingredient'), 'Tomate', 10, 1, 300),
-  ('ing' || nextval('seq_ingredient'), 'Oignon', 10, 1, 300),
-  ('ing' || nextval('seq_ingredient'), 'Ciboulette', 1, 2, 10),
-  ('ing' || nextval('seq_ingredient'), 'Gingembre', 10, 1, 10),
-  ('ing' || nextval('seq_ingredient'), 'Ail', 1, 5, 300),
-  ('ing' || nextval('seq_ingredient'), 'Viande de porc', 100, 1, 1200),
-  ('ing' || nextval('seq_ingredient'), 'echine', 100, 1, 1500),
-  ('ing' || nextval('seq_ingredient'), 'riz blanc', 1, 2, 900),
-  ('ing' || nextval('seq_ingredient'), 'riz rouge', 1, 2, 900),
-  ('ing' || nextval('seq_ingredient'), 'pomme de terre', 1000, 1, 3000),
-  ('ing' || nextval('seq_ingredient'), 'langue', 100, 1, 18000),
-  ('ing' || nextval('seq_ingredient'), 'poivre vert', 1, 2, 10),
-  ('ing' || nextval('seq_ingredient'), 'poivre noir', 10, 1, 30),
-  ('ing' || nextval('seq_ingredient'), 'thym tige', 1, 2, 50),
-  ('ing' || nextval('seq_ingredient'), 'pate', 100, 1, 800),
-  ('ing' || nextval('seq_ingredient'), 'farine', 100, 1, 800),
-  ('ing' || nextval('seq_ingredient'), 'salami', 100, 1, 3500),
-  ('ing' || nextval('seq_ingredient'), 'mortadelle volaille', 100, 1, 3000),
-  ('ing' || nextval('seq_ingredient'), 'mortadelle bœuf', 100, 1, 3000),
-  ('ing' || nextval('seq_ingredient'), 'jambon', 100, 1, 2800),
-  ('ing' || nextval('seq_ingredient'), 'pain français', 1, 2, 2500),
-  ('ing' || nextval('seq_ingredient'), 'mayonnaise', 10, 1, 200),
-  ('ing' || nextval('seq_ingredient'), 'ketchup', 10, 1, 200),
-  ('ing' || nextval('seq_ingredient'), 'chili', 10, 1, 200),
-  ('ing' || nextval('seq_ingredient'), 'piment vert', 1, 2, 200),
-  ('ing' || nextval('seq_ingredient'), 'olive noir', 100, 1, 6000),
-  ('ing' || nextval('seq_ingredient'), 'olive verte', 100, 1, 5000),
-  ('ing' || nextval('seq_ingredient'), 'huile d olive', 100, 3, 2000),
-  ('ing' || nextval('seq_ingredient'), 'huile d olive', 100, 3, 1200),
-  ('ing' || nextval('seq_ingredient'), 'avocat', 1, 2, 800),
-  ('ing' || nextval('seq_ingredient'), 'mangue', 1, 2, 500);
+INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES
+  ('ing' || (seq_ingredient.nextval), 'blanc de poulet', 100, 1, 1800);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'carotte', 100, 1, 1000);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'Haricot vert', 100, 1, 1200);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'Courgettes', 100, 1, 500);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'œuf', 1, 2, 1000);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'lait', 100, 3, 550);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'salade', 50, 1, 500);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'Tomate', 10, 1, 300);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'Oignon', 10, 1, 300);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'Ciboulette', 1, 2, 10);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'Gingembre', 10, 1, 10);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'Ail', 1, 5, 300);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'Viande de porc', 100, 1, 1200);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'echine', 100, 1, 1500);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'riz blanc', 1, 2, 900);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'riz rouge', 1, 2, 900);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'pomme de terre', 1000, 1, 3000);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'langue', 100, 1, 18000);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'poivre vert', 1, 2, 10);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'poivre noir', 10, 1, 30);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'thym tige', 1, 2, 50);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'pate', 100, 1, 800);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'farine', 100, 1, 800);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'salami', 100, 1, 3500);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'mortadelle volaille', 100, 1, 3000);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'mortadelle bœuf', 100, 1, 3000);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'jambon', 100, 1, 2800);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'pain français', 1, 2, 2500);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'mayonnaise', 10, 1, 200);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'ketchup', 10, 1, 200);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'chili', 10, 1, 200);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'piment vert', 1, 2, 200);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'olive noir', 100, 1, 6000);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'olive verte', 100, 1, 5000);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'huile d olive', 100, 3, 2000);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'huile d olive', 100, 3, 1200);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'avocat', 1, 2, 800);
+  INSERT INTO ingredient (id, nom, valeur, unite, prixAchat)VALUES('ing' || (seq_ingredient.nextval), 'mangue', 1, 2, 500);
+  -- Insert t the ingredien.data in table using the seq_ingredient sequence
+    INSERT INTO ingredient (id, nom, prixAchat, unite, valeur, dateSaisonDebut, dateSaisonFin)VALUES
+    ('ing' ||(seq_ingredient.nextval), 'fraise', 500, 1, 100, NULL, NULL);
+    ('ing' ||(seq_ingredient.nextval), 'pomme', 200, 2, 1, NULL, NULL);
+    ('ing' ||(seq_ingredient.nextval), 'yaourt nature sans sucre', 1000, 2, 1, NULL, NULL);
+    ('ing' ||(seq_ingredient.nextval), 'yaourt nature sucré', 1000, 2, 1, NULL, NULL);
+    ('ing' ||(seq_ingredient.nextval), 'glace', 3500, 2, 1, NULL, NULL);
+    ('ing' ||(seq_ingredient.nextval), 'pate à pizza', 3000, 2, 1, NULL, NULL);
+    ('ing' ||(seq_ingredient.nextval), 'pate à crêpe', 2000, 2, 1, NULL, NULL);
+    ('ing' ||(seq_ingredient.nextval), 'pate à gauffre', 2500, 2, 1, NULL, NULL);
+    ('ing' ||(seq_ingredient.nextval), 'vin blanc', 25000, 3, 1000, NULL, NULL);
+    ('ing' ||(seq_ingredient.nextval), 'vin rouge', 25000, 3, 1000, NULL, NULL);
+    ('ing' ||(seq_ingredient.nextval), 'paprika', 10, 1, 10, NULL, NULL);
+    ('ing' ||(seq_ingredient.nextval), 'piment', 10, 1, 10, NULL, NULL);
+    ('ing' ||(seq_ingredient.nextval), 'chocolat', 800, 2, 1, NULL, NULL);
+    ('ing' ||(seq_ingredient.nextval), 'tsaramaso', 1000, 1, 100, NULL, NULL);
+    ('ing' ||(seq_ingredient.nextval), 'Voanjobory', 1000, 1, 100, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'Kabaro', 1000, 1, 100, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'Anana légume', 1000, 1, 100, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'Ravitoto', 1000, 1, 100, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'Banane', 100, 2, 1, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'Ananas', 1000, 1, 100, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'Maïs', 4000, 1, 150, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'Poisson Capitaine', 15000, 1, 1000, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'Poisson Merlan', 15000, 1, 1000, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'Poisson tilapia', 15000, 1, 1000, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'Crevette', 10000, 1, 100, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'Calmar', 5000, 1, 100, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'Citron', 500, 2, 1, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'Fromage', 6000, 1, 100, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'Poivron', 200, 2, 1, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'Nouille', 1000, 2, 1, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'Spaghetti', 800, 1, 100, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'Coriandre', 10, 1, 10, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'Persil', 10, 1, 10, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'Celeri', 10, 1, 10, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'Orange', 700, 2, 1, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'Jumbo', 300, 2, 1, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'Jaba', 300, 2, 1, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'Saucisse Fumée Porc', 2500, 1, 100, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'Saucisse Boeuf', 2000, 1, 100, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'Saucisse Porc', 2000, 1, 100, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'Saucisse crevette', 2500, 1, 100, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'Café', 500, 2, 1, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'Jus gazeuse', 2000, 2, 1, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'chou', 2000, 2, 1, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'brocolis', 2000, 2, 1, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'chou fleur', 2000, 2, 1, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'melon', 1000, 2, 1, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'pistache', 50, 1, 10, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'foie de bœuf', 1500, 1, 100, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'coeur de bœuf', 1500, 1, 100, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'tripe noir', 1200, 1, 100, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'cervelle', 1200, 1, 100, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'jambon de porc', 3500, 1, 100, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'foie gras', 30000, 1, 100, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'creme liquide', 5000, 3, 100, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'saucisson', 3500, 1, 100, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'ail', 10, 1, 10, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'sucre', 1500, 1, 100, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'sel', 500, 1, 100, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'vinaigre blanc', 1000, 3, 100, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'vinaigre rouge', 1000, 3, 100, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'feuille de manioc hachée', 1000, 1, 100, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'Lait de coco', 5000, 3, 100, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'chou', 500, 1, 100, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'patsa', 1000, 1, 100, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'tsatsiou', 5000, 1, 100, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'canard', 1500, 1, 100, NULL, NULL),
+    ('ing' ||(seq_ingredient.nextval), 'chapelure', 1500, 2, 1, NULL, NULL),
+    
+    ('ing' ||nextval('seq_ingredient'), 'eau', 10, 3   , 10, NULL, NULL),
+    ('ing' ||nextval('seq_ingredient'), 'cresson', 2000, 1   , 1000, NULL, NULL),
+    ('ing' ||nextval('seq_ingredient'), 'levure', 1000, 2  , 1, NULL, NULL)
+    ;
 
+-- Continue adding more rows for the remaining data using the same pattern
+
+ update ingredient set nom ='huile' where id = 'ing36';
 
   --- insertions part de maladies : 
 
@@ -390,203 +543,190 @@ VALUES
 -- Insérer des données de maladie dans la table "Maladie"
 
 
-INSERT INTO Maladie (id, Maladie, etat)
-VALUES
-  ('maladie' || nextval('seq_maladie'), 'Diabète de type 1',1),
-  ('maladie' || nextval('seq_maladie'), 'Diabète de type 2', 1),
-  ('maladie' || nextval('seq_maladie'), 'Hypertension (Pression arterielle élevée)', 1),
-  ('maladie' || nextval('seq_maladie'), 'Maladie cardiaque', 1),
-  ('maladie' || nextval('seq_maladie'), 'Maladie rénale', 1),
-  ('maladie' || nextval('seq_maladie'), 'Intolérance au lactose', 2),
-  ('maladie' || nextval('seq_maladie'), 'Intolérance au gluten', 2),
-  ('maladie' || nextval('seq_maladie'), 'Allergies alimentaires', 2),
-  ('maladie' || nextval('seq_maladie'), 'Goutte', 1),
-  ('maladie' || nextval('seq_maladie'), 'Maladie de Crohn', 1),
-  ('maladie' || nextval('seq_maladie'), 'Maladie de la thyroïde', 1),
-  ('maladie' || nextval('seq_maladie'), 'Cholestérol élevé', 1),
-  ('maladie' || nextval('seq_maladie'), 'Maladie hépatique (foie)', 1),
-  ('maladie' || nextval('seq_maladie'), 'Asthme', 1),
-  ('maladie' || nextval('seq_maladie'), 'Maladie de l intestin irritable', 1),
-  ('maladie' || nextval('seq_maladie'), 'Ostéoporose', 1),
-  ('maladie' || nextval('seq_maladie'), 'Migraines', 1),
-  ('maladie' || nextval('seq_maladie'), 'Syndrome de lintestin irritable (SII)', 1),
-  ('maladie' || nextval('seq_maladie'), 'Allergies saisonnières', 2),
-  ('maladie' || nextval('seq_maladie'), 'Maladie auto-immune (ex. lupus, polyarthrite rhumatoïde)', 1),
-  ('maladie' || nextval('seq_maladie'), 'Anémie', 1),
-  ('maladie' || nextval('seq_maladie'), 'Intolérance aux FODMAPs', 2),
-  ('maladie' || nextval('seq_maladie'), 'Intolérance aux histamines', 2),
-  ('maladie' || nextval('seq_maladie'), 'Intolérance à la caféine', 2),
-  ('maladie' || nextval('seq_maladie'), 'Intolérance aux sulfites', 2),
-  ('maladie' || nextval('seq_maladie'), 'Intolérance au fructose', 2),
-  ('maladie' || nextval('seq_maladie'), 'Intolérance à l histamine', 2),
-  ('maladie' || nextval('seq_maladie'), 'Intolérance au galactose', 2),
-  ('maladie' || nextval('seq_maladie'), 'Régimes pour prendre du poids', 3),
-  ('maladie' || nextval('seq_maladie'), 'Régimes pour perdre du poids', 3),
-  ('maladie' || nextval('seq_maladie'), 'Rhume', 1),
-  ('maladie' || nextval('seq_maladie'), 'Dépression', 1),
-  ('maladie' || nextval('seq_maladie'), 'Infections respiratoires aiguës (IRA)', 1),
-  ('maladie' || nextval('seq_maladie'), 'Grippe', 1),
-  ('maladie' || nextval('seq_maladie'), 'Maladies infectieuses émergentes', 1),
-  ('maladie' || nextval('seq_maladie'), 'Maladies cardiovasculaires', 1),
-  ('maladie' || nextval('seq_maladie'), 'Épilepsie', 1),
-  ('maladie' || nextval('seq_maladie'), 'Diarrhée', 1),
-  ('maladie' || nextval('seq_maladie'), 'Ulcère gastrique', 1),
-  ('maladie' || nextval('seq_maladie'), 'Reflux gastro-œsophagien (RGO)', 1),
-  ('maladie' || nextval('seq_maladie'), 'Appendicite', 1),
-  ('maladie' || nextval('seq_maladie'), 'Colite', 1),
-  ('maladie' || nextval('seq_maladie'), 'Constipation chronique', 1),
-  ('maladie' || nextval('seq_maladie'), 'Pancréatite', 1),
-  ('maladie' || nextval('seq_maladie'), 'Tumeurs abdominales', 1),
-  ('maladie' || nextval('seq_maladie'), 'Inflammation', 1),
-  ('maladie' || nextval('seq_maladie'), 'Gastro-intestinales', 1),
-  ('maladie' || nextval('seq_maladie'), 'Anxiété', 1),
-  ('maladie' || nextval('seq_maladie'), 'Malabsorption', 1),
-  ('maladie' || nextval('seq_maladie'), 'Fièvre', 1),
-  ('maladie' || nextval('seq_maladie'), 'Paludisme', 1),
-  ('maladie' || nextval('seq_maladie'), 'Hypothyroïdie', 1),
-  ('maladie' || nextval('seq_maladie'), 'Hyperthyroïdie', 1),
-  ('maladie' || nextval('seq_maladie'), 'Chute de cheveux', 3),
-  ('maladie' || nextval('seq_maladie'), 'Digestion difficile', 3),
-  ('maladie' || nextval('seq_maladie'), 'Hémorroïdes', 1),
-  ('maladie' || nextval('seq_maladie'), 'Hépatite B', 1),
-  ('maladie' || nextval('seq_maladie'), 'Pneumonie', 1),
-  ('maladie' || nextval('seq_maladie'), 'Toux', 1),
-  ('maladie' || nextval('seq_maladie'), 'Végétariens', 3),
-  ('maladie' || nextval('seq_maladie'), 'Non-mangeurs de porc', 3);
+INSERT INTO Maladie (id, Maladie, etat)VALUES
+  ('maladie' || (seq_maladie.nextval), 'Diabète de type 1',1);
+  INSERT INTO Maladie (id, Maladie, etat)VALUES('maladie' || (seq_maladie.nextval), 'Diabète de type 2', 1);
+  INSERT INTO Maladie (id, Maladie, etat)VALUES('maladie' || (seq_maladie.nextval), 'Hypertension (Pression arterielle élevée)', 1);
+  INSERT INTO Maladie (id, Maladie, etat)VALUES('maladie' || (seq_maladie.nextval), 'Maladie cardiaque', 1);
+  INSERT INTO Maladie (id, Maladie, etat)VALUES('maladie' || (seq_maladie.nextval), 'Maladie rénale', 1);
+  INSERT INTO Maladie (id, Maladie, etat)VALUES('maladie' || (seq_maladie.nextval), 'Intolérance au lactose', 2);
+  INSERT INTO Maladie (id, Maladie, etat)VALUES('maladie' || (seq_maladie.nextval), 'Intolérance au gluten', 2);
+  INSERT INTO Maladie (id, Maladie, etat)VALUES('maladie' || (seq_maladie.nextval), 'Allergies alimentaires', 2);
+  ('maladie' || (seq_maladie.nextval), 'Goutte', 1),
+  ('maladie' || (seq_maladie.nextval), 'Maladie de Crohn', 1),
+  ('maladie' || (seq_maladie.nextval), 'Maladie de la thyroïde', 1),
+  ('maladie' || (seq_maladie.nextval), 'Cholestérol élevé', 1),
+  ('maladie' || (seq_maladie.nextval), 'Maladie hépatique (foie)', 1),
+  ('maladie' || (seq_maladie.nextval), 'Asthme', 1),
+  ('maladie' || (seq_maladie.nextval), 'Maladie de l intestin irritable', 1),
+  ('maladie' || (seq_maladie.nextval), 'Ostéoporose', 1),
+  ('maladie' || (seq_maladie.nextval), 'Migraines', 1),
+  ('maladie' || (seq_maladie.nextval), 'Syndrome de lintestin irritable (SII)', 1),
+  ('maladie' || (seq_maladie.nextval), 'Allergies saisonnières', 2),
+  ('maladie' || (seq_maladie.nextval), 'Maladie auto-immune (ex. lupus, polyarthrite rhumatoïde)', 1),
+  ('maladie' || (seq_maladie.nextval), 'Anémie', 1),
+  ('maladie' || (seq_maladie.nextval), 'Intolérance aux FODMAPs', 2),
+  ('maladie' || (seq_maladie.nextval), 'Intolérance aux histamines', 2),
+  ('maladie' || (seq_maladie.nextval), 'Intolérance à la caféine', 2),
+  ('maladie' || (seq_maladie.nextval), 'Intolérance aux sulfites', 2),
+  ('maladie' || (seq_maladie.nextval), 'Intolérance au fructose', 2),
+  ('maladie' || (seq_maladie.nextval), 'Intolérance à l histamine', 2),
+  ('maladie' || (seq_maladie.nextval), 'Intolérance au galactose', 2),
+  ('maladie' || (seq_maladie.nextval), 'Régimes pour prendre du poids', 3),
+  ('maladie' || (seq_maladie.nextval), 'Régimes pour perdre du poids', 3),
+  ('maladie' || (seq_maladie.nextval), 'Rhume', 1),
+  ('maladie' || (seq_maladie.nextval), 'Dépression', 1),
+  ('maladie' || (seq_maladie.nextval), 'Infections respiratoires aiguës (IRA)', 1),
+  ('maladie' || (seq_maladie.nextval), 'Grippe', 1),
+  ('maladie' || (seq_maladie.nextval), 'Maladies infectieuses émergentes', 1),
+  ('maladie' || (seq_maladie.nextval), 'Maladies cardiovasculaires', 1),
+  ('maladie' || (seq_maladie.nextval), 'Épilepsie', 1),
+  ('maladie' || (seq_maladie.nextval), 'Diarrhée', 1),
+  ('maladie' || (seq_maladie.nextval), 'Ulcère gastrique', 1),
+  ('maladie' || (seq_maladie.nextval), 'Reflux gastro-œsophagien (RGO)', 1),
+  ('maladie' || (seq_maladie.nextval), 'Appendicite', 1),
+  ('maladie' || (seq_maladie.nextval), 'Colite', 1),
+  ('maladie' || (seq_maladie.nextval), 'Constipation chronique', 1),
+  ('maladie' || (seq_maladie.nextval), 'Pancréatite', 1),
+  ('maladie' || (seq_maladie.nextval), 'Tumeurs abdominales', 1),
+  ('maladie' || (seq_maladie.nextval), 'Inflammation', 1),
+  ('maladie' || (seq_maladie.nextval), 'Gastro-intestinales', 1),
+  ('maladie' || (seq_maladie.nextval), 'Anxiété', 1),
+  ('maladie' || (seq_maladie.nextval), 'Malabsorption', 1),
+  ('maladie' || (seq_maladie.nextval), 'Fièvre', 1),
+  ('maladie' || (seq_maladie.nextval), 'Paludisme', 1),
+  ('maladie' || (seq_maladie.nextval), 'Hypothyroïdie', 1),
+  ('maladie' || (seq_maladie.nextval), 'Hyperthyroïdie', 1),
+  ('maladie' || (seq_maladie.nextval), 'Chute de cheveux', 3),
+  ('maladie' || (seq_maladie.nextval), 'Digestion difficile', 3),
+  ('maladie' || (seq_maladie.nextval), 'Hémorroïdes', 1),
+  ('maladie' || (seq_maladie.nextval), 'Hépatite B', 1),
+  ('maladie' || (seq_maladie.nextval), 'Pneumonie', 1),
+  ('maladie' || (seq_maladie.nextval), 'Toux', 1),
+  ('maladie' || (seq_maladie.nextval), 'Végétariens', 3),
+  ('maladie' || (seq_maladie.nextval), 'Non-mangeurs de porc', 3);
 
 
 -- ANTENNE.MENUDYNAMIQUE definition
 
-CREATE TABLE "MENUDYNAMIQUE" 
-   (	"ID" VARCHAR2(50), 
-	"LIBELLE" VARCHAR2(50), 
-	"ICONE" VARCHAR2(250), 
-	"HREF" VARCHAR2(250), 
-	"RANG" NUMBER, 
-	"NIVEAU" NUMBER, 
-	"ID_PERE" VARCHAR2(50), 
-	 PRIMARY KEY ("ID")
-  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
-  STORAGE(INITIAL 131072 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
-  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1 BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
-  TABLESPACE "USERS"  ENABLE
-   ) SEGMENT CREATION IMMEDIATE 
-  PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 NOCOMPRESS LOGGING
-  STORAGE(INITIAL 720896 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
-  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1 BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
-  TABLESPACE "USERS" ;
 
-CREATE UNIQUE INDEX "SYS_C00428005" ON "ANTENNE"."MENUDYNAMIQUE" ("ID") 
-  PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
-  STORAGE(INITIAL 131072 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
-  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1 BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
-  TABLESPACE "USERS" ;
+CREATE TABLE menudynamique (
+	id varchar(50) NOT NULL,
+	libelle varchar(50) NULL,
+	icone varchar(250) NULL,
+	href varchar(250) NULL,
+	rang int NULL,
+	niveau int NULL,
+	id_pere varchar(50) NULL,
+	CONSTRAINT menudynamique_pkey PRIMARY KEY (id)
+);
 
-
+insert into menudynamique(id,libelle,icone,  rang, niveau) values('m1','Accueil','fa fa-list',1,1);
 
 
   -- Insérer des données dans la table "Plat"
-INSERT INTO Plat (id, NomPlats, descri)
-VALUES
-  ('plat' || nextval('seq_plat'), 'Mofo akondro', NULL),
-  ('plat' || nextval('seq_plat'), 'Mofo anana', NULL),
-  ('plat' || nextval('seq_plat'), 'Mofo baolina', NULL),
-  ('plat' || nextval('seq_plat'), 'Pakopako', NULL),
-  ('plat' || nextval('seq_plat'), 'Riz cantonais', NULL),
-  ('plat' || nextval('seq_plat'), 'Riz Firt', NULL),
-  ('plat' || nextval('seq_plat'), 'ailes de poulet caramelisé', NULL),
-  ('plat' || nextval('seq_plat'), 'cuisse de poulet grillé', NULL),
-  ('plat' || nextval('seq_plat'), 'Pistolet', NULL),
-  ('plat' || nextval('seq_plat'), 'Poivron farci', NULL),
-  ('plat' || nextval('seq_plat'), 'hena Omby ritra', NULL),
-  ('plat' || nextval('seq_plat'), 'tripy sauce', NULL),
-  ('plat' || nextval('seq_plat'), 'Tsaramaso sy Henakisoa', NULL),
-  ('plat' || nextval('seq_plat'), 'Ravitoto sy Henakisoa', NULL),
-  ('plat' || nextval('seq_plat'), 'Ravitoto sy HenaOmby', NULL),
-  ('plat' || nextval('seq_plat'), 'Voanjobory sy Henakisoa', NULL),
-  ('plat' || nextval('seq_plat'), 'Voanjobory sy HenaOmby', NULL),
-  ('plat' || nextval('seq_plat'), 'Totokena sy Courgettes', NULL),
-  ('plat' || nextval('seq_plat'), 'Voatavo sy voanjo', NULL),
-  ('plat' || nextval('seq_plat'), 'Legioma saosy', NULL),
-  ('plat' || nextval('seq_plat'), 'Saucisse Fumée sy Legioma', NULL),
-  ('plat' || nextval('seq_plat'), 'Saucisse Porc sy Tsaramaso', NULL),
-  ('plat' || nextval('seq_plat'), 'Saucisse Boeuf sy Tsaramaso', NULL),
-  ('plat' || nextval('seq_plat'), 'Lasary Comcombre', NULL),
-  ('plat' || nextval('seq_plat'), 'Lasary Karaoty', NULL),
-  ('plat' || nextval('seq_plat'), 'Lasary Voatabia', NULL),
-  ('plat' || nextval('seq_plat'), 'Lasary Laisoa', NULL),
-  ('plat' || nextval('seq_plat'), 'Lasary Manga', NULL),
-  ('plat' || nextval('seq_plat'), 'Macédoine', NULL),
-  ('plat' || nextval('seq_plat'), 'Hors d œuvre', NULL);
+INSERT INTO Plat (id, NomPlats, descri)VALUES
+  ('plat' || (seq_plat.nextval), 'Mofo akondro', NULL);
+  INSERT INTO Plat (id, NomPlats, descri)VALUES('plat' || (seq_plat.nextval), 'Mofo anana', NULL);
+  INSERT INTO Plat (id, NomPlats, descri)VALUES('plat' || (seq_plat.nextval), 'Mofo baolina', NULL);
+  INSERT INTO Plat (id, NomPlats, descri)VALUES('plat' || (seq_plat.nextval), 'Pakopako', NULL);
+  INSERT INTO Plat (id, NomPlats, descri)VALUES('plat' || (seq_plat.nextval), 'Riz cantonais', NULL);
+  INSERT INTO Plat (id, NomPlats, descri)VALUES('plat' || (seq_plat.nextval), 'Riz Firt', NULL);
+  INSERT INTO Plat (id, NomPlats, descri)VALUES('plat' || (seq_plat.nextval), 'ailes de poulet caramelisé', NULL);
+  INSERT INTO Plat (id, NomPlats, descri)VALUES('plat' || (seq_plat.nextval), 'cuisse de poulet grillé', NULL);
+  INSERT INTO Plat (id, NomPlats, descri)VALUES('plat' || (seq_plat.nextval), 'Pistolet', NULL);
+  INSERT INTO Plat (id, NomPlats, descri)VALUES('plat' || (seq_plat.nextval), 'Poivron farci', NULL);
+  INSERT INTO Plat (id, NomPlats, descri)VALUES('plat' || (seq_plat.nextval), 'hena Omby ritra', NULL);
+  INSERT INTO Plat (id, NomPlats, descri)VALUES('plat' || (seq_plat.nextval), 'tripy sauce', NULL);
+  INSERT INTO Plat (id, NomPlats, descri)VALUES('plat' || (seq_plat.nextval), 'Tsaramaso sy Henakisoa', NULL);
+  INSERT INTO Plat (id, NomPlats, descri)VALUES('plat' || (seq_plat.nextval), 'Ravitoto sy Henakisoa', NULL);
+  INSERT INTO Plat (id, NomPlats, descri)VALUES('plat' || (seq_plat.nextval), 'Ravitoto sy HenaOmby', NULL);
+  INSERT INTO Plat (id, NomPlats, descri)VALUES('plat' || (seq_plat.nextval), 'Voanjobory sy Henakisoa', NULL);
+  INSERT INTO Plat (id, NomPlats, descri)VALUES('plat' || (seq_plat.nextval), 'Voanjobory sy HenaOmby', NULL);
+  INSERT INTO Plat (id, NomPlats, descri)VALUES('plat' || (seq_plat.nextval), 'Totokena sy Courgettes', NULL);
+  INSERT INTO Plat (id, NomPlats, descri)VALUES('plat' || (seq_plat.nextval), 'Voatavo sy voanjo', NULL);
+  INSERT INTO Plat (id, NomPlats, descri)VALUES('plat' || (seq_plat.nextval), 'Legioma saosy', NULL);
+  INSERT INTO Plat (id, NomPlats, descri)VALUES('plat' || (seq_plat.nextval), 'Saucisse Fumée sy Legioma', NULL);
+  INSERT INTO Plat (id, NomPlats, descri)VALUES('plat' || (seq_plat.nextval), 'Saucisse Porc sy Tsaramaso', NULL);
+  INSERT INTO Plat (id, NomPlats, descri)VALUES('plat' || (seq_plat.nextval), 'Saucisse Boeuf sy Tsaramaso', NULL);
+  INSERT INTO Plat (id, NomPlats, descri)VALUES('plat' || (seq_plat.nextval), 'Lasary Comcombre', NULL);
+  INSERT INTO Plat (id, NomPlats, descri)VALUES('plat' || (seq_plat.nextval), 'Lasary Karaoty', NULL);
+  INSERT INTO Plat (id, NomPlats, descri)VALUES('plat' || (seq_plat.nextval), 'Lasary Voatabia', NULL);
+  INSERT INTO Plat (id, NomPlats, descri)VALUES('plat' || (seq_plat.nextval), 'Lasary Laisoa', NULL);
+  INSERT INTO Plat (id, NomPlats, descri)VALUES('plat' || (seq_plat.nextval), 'Lasary Manga', NULL);
+  INSERT INTO Plat (id, NomPlats, descri)VALUES('plat' || (seq_plat.nextval), 'Macédoine', NULL);
+  INSERT INTO Plat (id, NomPlats, descri)VALUES('plat' || (seq_plat.nextval), 'Hors d œuvre', NULL);
+  
+  
 
 
 
 
 -- Insérer des données dans la table "PlatTyper"
-INSERT INTO PlatTyper (id, idPlat, idTypePlat)
-VALUES
-  ('plattyper' || nextval('seq_plattyper'), 'plat1', '5'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat1', '3'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat2', '5'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat2', '3'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat3', '5'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat3', '3'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat3', '6'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat4', '5'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat5', '9'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat5', '10'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat6', '9'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat6', '10'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat7', '1'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat7', '3'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat7', '10'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat8', '3'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat8', '10'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat9', '3'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat9', '10'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat10', '2'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat10', '3'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat11', '1'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat11', '11'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat11', '4'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat12', '1'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat12', '11'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat13', '1'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat13', '11'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat14', '1'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat14', '11'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat15', '1'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat15', '11'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat16', '1'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat16', '11'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat17', '1'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat17', '11'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat18', '1'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat18', '11'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat19', '1'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat19', '11'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat20', '2'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat20', '9'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat21', '1'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat21', '11'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat21', '10'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat22', '1'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat22', '11'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat22', '10'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat23', '1'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat23', '11'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat23', '10'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat24', '2'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat24', '9'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat25', '2'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat25', '9'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat26', '2'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat26', '9'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat27', '2'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat27', '9'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat28', '2'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat28', '9'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat29', '2'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat29', '9'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat30', '2'),
-  ('plattyper' || nextval('seq_plattyper'), 'plat30', '10');
+
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat1', '5');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat1', '3');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat2', '5');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat2', '3');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat3', '5');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat3', '3');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat3', '6');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat4', '5');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat5', '9');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat5', '10');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat6', '9');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat6', '10');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat7', '1');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat7', '3');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat7', '10');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat8', '3');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat8', '10');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat9', '3');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat9', '10');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat10', '2');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat10', '3');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat11', '1');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat11', '11');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat11', '4');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat12', '1');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat12', '11');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat13', '1');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat13', '11');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat14', '1');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat14', '11');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat15', '1');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat15', '11');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat16', '1');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat16', '11');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat17', '1');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat17', '11');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat18', '1');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat18', '11');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat19', '1');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat19', '11');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat20', '2');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat20', '9');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat21', '1');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat21', '11');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat21', '10');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat22', '1');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat22', '11');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat22', '10');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat23', '1');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat23', '11');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat23', '10');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat24', '2');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat24', '9');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat25', '2');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat25', '9');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat26', '2');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat26', '9');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat27', '2');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat27', '9');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat28', '2');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat28', '9');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat29', '2');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat29', '9');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat30', '2');
+  INSERT INTO PlatTyper (id, idPlat, idTypePlat)VALUES('plattyper' || (seq_plattyper.nextval), 'plat30', '10');
+  
